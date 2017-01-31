@@ -17,6 +17,8 @@ MongoClient.connect('mongodb://localhost:27017/crunchbase', (err, db) => {
   const cursor = db.collection('companies').find(query);
   cursor.project(projection);
   cursor.sort([["founded_year", 1], ["number_of_employees", -1]]);
+  cursor.skip(options.skip);
+  cursor.limit(options.limit);
 
   let numMatches = 0;
 
@@ -54,7 +56,9 @@ function commandLineOptions() {
   const cli = commandLineArgs([
     { name: "firstYear", alias: "f", type: Number},
     { name: "lastYear", alias: "l", type: Number},
-    { name: "employees", alias: "e", type: Number}
+    { name: "employees", alias: "e", type: Number},
+    { name: "skip", type: Number, defaultValue: 0},
+    { name: "limit", type: Number, defaultValue: 2000}
   ]);
 
   const options = cli.parse();
