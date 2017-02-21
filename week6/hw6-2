@@ -1,0 +1,17 @@
+use test
+
+db.grades.aggregate( [
+		{ $unwind: "$scores" },  
+	  { $match: { "scores.type": { $ne: "quiz" } } },
+		{ $group: { 
+			_id: { stu_id: "$student_id", class_id: "$class_id" }, 
+			stu_avg: { $avg: "$scores.score" }
+			}
+		},
+		{ $group: {
+			_id: "$_id.class_id",
+			avg: { $avg: "$stu_avg" } 
+			}
+		},
+		{ $sort: { "avg" : -1 } }
+] );
