@@ -112,7 +112,6 @@ function ItemDAO(database) {
     // place within your code to pass the items for the selected page
     // to the callback.
 
-
     let query = (category != "All") ? { "category": category} : { "category": { $ne: "null"} };
 
     const cursor = this.db.collection('item').find(query);
@@ -132,8 +131,6 @@ function ItemDAO(database) {
   this.getNumItems = function(category, callback) {
     "use strict";
 
-    var numItems = 0;
-
     /*
      * TODO-lab1C:
      *
@@ -151,8 +148,16 @@ function ItemDAO(database) {
 
     // TODO Include the following line in the appropriate
     // place within your code to pass the count to the callback.
-    callback(numItems);
-  }
+
+    let query = (category != "All") ? { "category": category} : { "category": { $ne: "null"} };
+
+    this.db.collection('item').find(query).toArray( function(err, category) {
+
+      let numItems = category.length;
+      callback(numItems);
+    });
+
+  };
 
 
   this.searchItems = function(query, page, itemsPerPage, callback) {
