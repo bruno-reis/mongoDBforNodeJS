@@ -187,25 +187,28 @@ function ItemDAO(database) {
      *
      */
 
-    var item = this.createDummyItem();
-    var items = [];
-    for (var i=0; i<5; i++) {
-      items.push(item);
-    }
-
     // TODO-lab2A Replace all code above (in this method).
 
     // TODO Include the following line in the appropriate
     // place within your code to pass the items for the selected page
     // of search results to the callback.
-    callback(items);
-  }
+
+    const cursor = this.db.collection('item').find( { $text: { $search: query } });
+    cursor.sort([["_id", 1]]);
+    cursor.skip(page * itemsPerPage);
+    cursor.limit(itemsPerPage);
+
+    cursor.toArray(function (err, items) {
+      if (err) throw err;
+
+      callback(items);
+    });
+
+  };
 
 
   this.getNumSearchItems = function(query, callback) {
     "use strict";
-
-    var numItems = 0;
 
     /*
      * TODO-lab2B
@@ -220,8 +223,15 @@ function ItemDAO(database) {
      * simply do this in the mongo shell.
      */
 
-    callback(numItems);
-  }
+    const cursor = this.db.collection('item').find( { $text: { $search: query } });
+
+    cursor.toArray(function (err, items) {
+      if (err) throw err;
+
+      callback(items.length);
+    });
+
+  };
 
 
   this.getItem = function(itemId, callback) {
