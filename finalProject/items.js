@@ -158,8 +158,7 @@ function ItemDAO(database) {
     });
 
   };
-
-
+  
   this.searchItems = function(query, page, itemsPerPage, callback) {
     "use strict";
 
@@ -206,7 +205,6 @@ function ItemDAO(database) {
 
   };
 
-
   this.getNumSearchItems = function(query, callback) {
     "use strict";
 
@@ -232,7 +230,6 @@ function ItemDAO(database) {
     });
 
   };
-
 
   this.getItem = function(itemId, callback) {
     "use strict";
@@ -261,7 +258,6 @@ function ItemDAO(database) {
       });
   };
 
-
   this.getRelatedItems = function(callback) {
     "use strict";
 
@@ -272,7 +268,6 @@ function ItemDAO(database) {
         callback(relatedItems);
       });
   };
-
 
   this.addReview = function(itemId, comment, name, stars, callback) {
     "use strict";
@@ -289,42 +284,44 @@ function ItemDAO(database) {
      *
      */
 
-    var reviewDoc = {
-      name: name,
-      comment: comment,
-      stars: stars,
-      date: Date.now()
-    }
-
     // TODO replace the following two lines with your code that will
     // update the document with a new review.
-    var doc = this.createDummyItem();
-    doc.reviews = [reviewDoc];
 
     // TODO Include the following line in the appropriate
     // place within your code to pass the updated doc to the
     // callback.
-    callback(doc);
-  }
 
-
-  this.createDummyItem = function() {
-    "use strict";
-
-    var item = {
-      _id: 1,
-      title: "Gray Hooded Sweatshirt",
-      description: "The top hooded sweatshirt we offer",
-      slogan: "Made of 100% cotton",
-      stars: 0,
-      category: "Apparel",
-      img_url: "/img/products/hoodie.jpg",
-      price: 29.99,
-      reviews: []
+    const reviewDoc = {
+      name: name,
+      comment: comment,
+      stars: stars,
+      date: Date.now()
     };
 
-    return item;
-  }
+    this.db.collection('item').updateOne(
+      { _id: itemId},
+      { $push: { reviews: reviewDoc }}
+    ).then(() => callback(reviewDoc));
+  };
+
+
+  // this.createDummyItem = function() {
+  //   "use strict";
+  //
+  //   var item = {
+  //     _id: 1,
+  //     title: "Gray Hooded Sweatshirt",
+  //     description: "The top hooded sweatshirt we offer",
+  //     slogan: "Made of 100% cotton",
+  //     stars: 0,
+  //     category: "Apparel",
+  //     img_url: "/img/products/hoodie.jpg",
+  //     price: 29.99,
+  //     reviews: []
+  //   };
+  //
+  //   return item;
+  // }
 }
 
 
