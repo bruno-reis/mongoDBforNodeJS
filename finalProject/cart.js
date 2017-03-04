@@ -49,7 +49,7 @@ function CartDAO(database) {
     });
 
   };
-  
+
   this.itemInCart = function(userId, itemId, callback) {
     "use strict";
 
@@ -78,11 +78,21 @@ function CartDAO(database) {
      *
      */
 
-    callback(null);
-
     // TODO-lab6 Replace all code above (in this method).
-  }
 
+    let query = { "userId": userId, "items._id": itemId};
+    let projection = { "items.$": 1 };
+
+    this.db.collection('cart')
+      .find(query, projection)
+      .limit(1)
+      .next( (err, item) => {
+        assert.equal(err, null);
+        if (item != null) item = item.items[0];
+        callback(item);
+      });
+
+  };
 
   /*
    * This solution is provide as an example to you of several query
@@ -170,37 +180,46 @@ function CartDAO(database) {
      *
      */
 
-    var userCart = {
-      userId: userId,
-      items: []
-    }
-    var dummyItem = this.createDummyItem();
-    dummyItem.quantity = quantity;
-    userCart.items.push(dummyItem);
-    callback(userCart);
-
     // TODO-lab7 Replace all code above (in this method).
+    let updateDoc = {};
 
-  }
+    if (quantity == 0) {
+      updateDoc = { "$pull": { items: { _id: itemId } } };
+    } else {
+      updateDoc = { "$set": { "items.$.quantity": quantity } };
+    }
 
-  this.createDummyItem = function() {
-    "use strict";
+    this.db.collection("cart").findOneAndUpdate(
+      { userId: userId,
+        "items._id": itemId
+      },
+      updateDoc,
+      { returnOriginal: false },
+      (err, result) => {
+        assert.equal(null, err);
+        callback(result.value);
+      }
+    );
+  };
 
-    var item = {
-      _id: 1,
-      title: "Gray Hooded Sweatshirt",
-      description: "The top hooded sweatshirt we offer",
-      slogan: "Made of 100% cotton",
-      stars: 0,
-      category: "Apparel",
-      img_url: "/img/products/hoodie.jpg",
-      price: 29.99,
-      quantity: 1,
-      reviews: []
-    };
-
-    return item;
-  }
+  // this.createDummyItem = function() {
+  //   "use strict";
+  //
+  //   var item = {
+  //     _id: 1,
+  //     title: "Gray Hooded Sweatshirt",
+  //     description: "The top hooded sweatshirt we offer",
+  //     slogan: "Made of 100% cotton",
+  //     stars: 0,
+  //     category: "Apparel",
+  //     img_url: "/img/products/hoodie.jpg",
+  //     price: 29.99,
+  //     quantity: 1,
+  //     reviews: []
+  //   };
+  //
+  //   return item;
+  // }
 
 }
 
