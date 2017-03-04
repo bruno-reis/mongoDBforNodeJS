@@ -11,8 +11,11 @@
         "nunjucks-date": "~1.2.0"
     },
     "author": "Shannon Bradshaw",
-    "license": "0BSD"
+    "license": "0BSD",
     "engines": {
-	"node": "6.10.0"
+			"node": "6.10.0"
+    },
+    "scripts": {
+			"postinstall": "bower install"
     }
 }
